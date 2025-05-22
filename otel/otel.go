@@ -1,4 +1,3 @@
-package otel
 package otel_pkg
 
 import (
