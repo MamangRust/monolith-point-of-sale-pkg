@@ -27,7 +27,7 @@ VALUES (
         $4,
         current_timestamp,
         current_timestamp
-    ) RETURNING user_id, firstname, lastname, email, password, created_at, updated_at, deleted_at
+    ) RETURNING user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at
 `
 
 type CreateUserParams struct {
@@ -66,6 +66,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (*User, 
 		&i.Lastname,
 		&i.Email,
 		&i.Password,
+		&i.VerificationCode,
+		&i.IsVerified,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -112,7 +114,7 @@ func (q *Queries) DeleteUserPermanently(ctx context.Context, userID int32) error
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT user_id, firstname, lastname, email, password, created_at, updated_at, deleted_at FROM users WHERE email = $1 AND deleted_at IS NULL
+SELECT user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at FROM users WHERE email = $1 AND deleted_at IS NULL
 `
 
 // GetUserByEmail: Retrieves active user by email
@@ -136,6 +138,8 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (*User, erro
 		&i.Lastname,
 		&i.Email,
 		&i.Password,
+		&i.VerificationCode,
+		&i.IsVerified,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -144,7 +148,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (*User, erro
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT user_id, firstname, lastname, email, password, created_at, updated_at, deleted_at FROM users WHERE user_id = $1 AND deleted_at IS NULL
+SELECT user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at FROM users WHERE user_id = $1 AND deleted_at IS NULL
 `
 
 // GetUserByID: Retrieves active user by ID
@@ -167,6 +171,8 @@ func (q *Queries) GetUserByID(ctx context.Context, userID int32) (*User, error) 
 		&i.Lastname,
 		&i.Email,
 		&i.Password,
+		&i.VerificationCode,
+		&i.IsVerified,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -176,7 +182,7 @@ func (q *Queries) GetUserByID(ctx context.Context, userID int32) (*User, error) 
 
 const getUserTrashed = `-- name: GetUserTrashed :many
 SELECT
-    user_id, firstname, lastname, email, password, created_at, updated_at, deleted_at,
+    user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at,
     COUNT(*) OVER() AS total_count
 FROM users
 WHERE deleted_at IS NOT NULL
@@ -192,15 +198,17 @@ type GetUserTrashedParams struct {
 }
 
 type GetUserTrashedRow struct {
-	UserID     int32        `json:"user_id"`
-	Firstname  string       `json:"firstname"`
-	Lastname   string       `json:"lastname"`
-	Email      string       `json:"email"`
-	Password   string       `json:"password"`
-	CreatedAt  sql.NullTime `json:"created_at"`
-	UpdatedAt  sql.NullTime `json:"updated_at"`
-	DeletedAt  sql.NullTime `json:"deleted_at"`
-	TotalCount int64        `json:"total_count"`
+	UserID           int32        `json:"user_id"`
+	Firstname        string       `json:"firstname"`
+	Lastname         string       `json:"lastname"`
+	Email            string       `json:"email"`
+	Password         string       `json:"password"`
+	VerificationCode string       `json:"verification_code"`
+	IsVerified       sql.NullBool `json:"is_verified"`
+	CreatedAt        sql.NullTime `json:"created_at"`
+	UpdatedAt        sql.NullTime `json:"updated_at"`
+	DeletedAt        sql.NullTime `json:"deleted_at"`
+	TotalCount       int64        `json:"total_count"`
 }
 
 // GetUserTrashed: Retrieves paginated list of soft-deleted users
@@ -236,6 +244,8 @@ func (q *Queries) GetUserTrashed(ctx context.Context, arg GetUserTrashedParams) 
 			&i.Lastname,
 			&i.Email,
 			&i.Password,
+			&i.VerificationCode,
+			&i.IsVerified,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
@@ -256,7 +266,7 @@ func (q *Queries) GetUserTrashed(ctx context.Context, arg GetUserTrashedParams) 
 
 const getUsers = `-- name: GetUsers :many
 SELECT
-    user_id, firstname, lastname, email, password, created_at, updated_at, deleted_at,
+    user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at,
     COUNT(*) OVER() AS total_count
 FROM users
 WHERE deleted_at IS NULL
@@ -272,15 +282,17 @@ type GetUsersParams struct {
 }
 
 type GetUsersRow struct {
-	UserID     int32        `json:"user_id"`
-	Firstname  string       `json:"firstname"`
-	Lastname   string       `json:"lastname"`
-	Email      string       `json:"email"`
-	Password   string       `json:"password"`
-	CreatedAt  sql.NullTime `json:"created_at"`
-	UpdatedAt  sql.NullTime `json:"updated_at"`
-	DeletedAt  sql.NullTime `json:"deleted_at"`
-	TotalCount int64        `json:"total_count"`
+	UserID           int32        `json:"user_id"`
+	Firstname        string       `json:"firstname"`
+	Lastname         string       `json:"lastname"`
+	Email            string       `json:"email"`
+	Password         string       `json:"password"`
+	VerificationCode string       `json:"verification_code"`
+	IsVerified       sql.NullBool `json:"is_verified"`
+	CreatedAt        sql.NullTime `json:"created_at"`
+	UpdatedAt        sql.NullTime `json:"updated_at"`
+	DeletedAt        sql.NullTime `json:"deleted_at"`
+	TotalCount       int64        `json:"total_count"`
 }
 
 // GetUsers: Retrieves paginated list of active users with search capability
@@ -316,6 +328,8 @@ func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]*GetUsers
 			&i.Lastname,
 			&i.Email,
 			&i.Password,
+			&i.VerificationCode,
+			&i.IsVerified,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
@@ -336,7 +350,7 @@ func (q *Queries) GetUsers(ctx context.Context, arg GetUsersParams) ([]*GetUsers
 
 const getUsersActive = `-- name: GetUsersActive :many
 SELECT
-    user_id, firstname, lastname, email, password, created_at, updated_at, deleted_at,
+    user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at,
     COUNT(*) OVER() AS total_count
 FROM users
 WHERE deleted_at IS NULL
@@ -352,15 +366,17 @@ type GetUsersActiveParams struct {
 }
 
 type GetUsersActiveRow struct {
-	UserID     int32        `json:"user_id"`
-	Firstname  string       `json:"firstname"`
-	Lastname   string       `json:"lastname"`
-	Email      string       `json:"email"`
-	Password   string       `json:"password"`
-	CreatedAt  sql.NullTime `json:"created_at"`
-	UpdatedAt  sql.NullTime `json:"updated_at"`
-	DeletedAt  sql.NullTime `json:"deleted_at"`
-	TotalCount int64        `json:"total_count"`
+	UserID           int32        `json:"user_id"`
+	Firstname        string       `json:"firstname"`
+	Lastname         string       `json:"lastname"`
+	Email            string       `json:"email"`
+	Password         string       `json:"password"`
+	VerificationCode string       `json:"verification_code"`
+	IsVerified       sql.NullBool `json:"is_verified"`
+	CreatedAt        sql.NullTime `json:"created_at"`
+	UpdatedAt        sql.NullTime `json:"updated_at"`
+	DeletedAt        sql.NullTime `json:"deleted_at"`
+	TotalCount       int64        `json:"total_count"`
 }
 
 // GetUsersActive: Retrieves paginated list of active users (identical to GetUsers)
@@ -395,6 +411,8 @@ func (q *Queries) GetUsersActive(ctx context.Context, arg GetUsersActiveParams) 
 			&i.Lastname,
 			&i.Email,
 			&i.Password,
+			&i.VerificationCode,
+			&i.IsVerified,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
@@ -440,7 +458,7 @@ SET
 WHERE
     user_id = $1
     AND deleted_at IS NOT NULL
-    RETURNING user_id, firstname, lastname, email, password, created_at, updated_at, deleted_at
+    RETURNING user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at
 `
 
 // RestoreUser: Recovers a soft-deleted user
@@ -464,6 +482,8 @@ func (q *Queries) RestoreUser(ctx context.Context, userID int32) (*User, error) 
 		&i.Lastname,
 		&i.Email,
 		&i.Password,
+		&i.VerificationCode,
+		&i.IsVerified,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -478,7 +498,7 @@ SET
 WHERE
     user_id = $1
     AND deleted_at IS NULL
-    RETURNING user_id, firstname, lastname, email, password, created_at, updated_at, deleted_at
+    RETURNING user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at
 `
 
 // TrashUser: Soft-deletes a user account
@@ -502,6 +522,8 @@ func (q *Queries) TrashUser(ctx context.Context, userID int32) (*User, error) {
 		&i.Lastname,
 		&i.Email,
 		&i.Password,
+		&i.VerificationCode,
+		&i.IsVerified,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
@@ -520,7 +542,7 @@ SET
 WHERE
     user_id = $1
     AND deleted_at IS NULL
-    RETURNING user_id, firstname, lastname, email, password, created_at, updated_at, deleted_at
+    RETURNING user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at
 `
 
 type UpdateUserParams struct {
@@ -562,6 +584,76 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, 
 		&i.Lastname,
 		&i.Email,
 		&i.Password,
+		&i.VerificationCode,
+		&i.IsVerified,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return &i, err
+}
+
+const updateUserIsVerified = `-- name: UpdateUserIsVerified :one
+UPDATE users
+SET
+    is_verified = $2,
+    updated_at = current_timestamp
+WHERE
+    user_id = $1
+    AND deleted_at IS NULL
+    RETURNING user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at
+`
+
+type UpdateUserIsVerifiedParams struct {
+	UserID     int32        `json:"user_id"`
+	IsVerified sql.NullBool `json:"is_verified"`
+}
+
+func (q *Queries) UpdateUserIsVerified(ctx context.Context, arg UpdateUserIsVerifiedParams) (*User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserIsVerified, arg.UserID, arg.IsVerified)
+	var i User
+	err := row.Scan(
+		&i.UserID,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Email,
+		&i.Password,
+		&i.VerificationCode,
+		&i.IsVerified,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return &i, err
+}
+
+const updateUserPassword = `-- name: UpdateUserPassword :one
+UPDATE users
+SET
+    password = $2,
+    updated_at = current_timestamp
+WHERE
+    user_id = $1
+    AND deleted_at IS NULL
+    RETURNING user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at
+`
+
+type UpdateUserPasswordParams struct {
+	UserID   int32  `json:"user_id"`
+	Password string `json:"password"`
+}
+
+func (q *Queries) UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (*User, error) {
+	row := q.db.QueryRowContext(ctx, updateUserPassword, arg.UserID, arg.Password)
+	var i User
+	err := row.Scan(
+		&i.UserID,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Email,
+		&i.Password,
+		&i.VerificationCode,
+		&i.IsVerified,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,

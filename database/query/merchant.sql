@@ -133,6 +133,15 @@ WHERE merchant_id = $1
   AND deleted_at IS NULL
   RETURNING *;
 
+
+-- name: UpdateMerchantStatus :one
+UPDATE merchants
+SET status = $2,
+    updated_at = CURRENT_TIMESTAMP
+WHERE merchant_id = $1
+  AND deleted_at IS NULL
+  RETURNING *;
+
 -- TrashMerchant: Soft-deletes a merchant account
 -- Purpose: Deactivate merchant without permanent deletion
 -- Parameters:

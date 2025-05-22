@@ -153,6 +153,29 @@ WHERE
     AND deleted_at IS NULL
     RETURNING *;
 
+
+-- name: UpdateUserPassword :one
+UPDATE users
+SET
+    password = $2,
+    updated_at = current_timestamp
+WHERE
+    user_id = $1
+    AND deleted_at IS NULL
+    RETURNING *;
+
+
+
+-- name: UpdateUserIsVerified :one
+UPDATE users
+SET
+    is_verified = $2,
+    updated_at = current_timestamp
+WHERE
+    user_id = $1
+    AND deleted_at IS NULL
+    RETURNING *;
+
 -- TrashUser: Soft-deletes a user account
 -- Purpose: Deactivate user without permanent deletion
 -- Parameters:

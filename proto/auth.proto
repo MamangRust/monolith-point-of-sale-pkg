@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pb;
 
-option go_package = "pointofsale/internal/pb";
+option go_package = "github.com/MamangRust/monolith-point-of-sale-shared/pb";
 
 import "user.proto";
 

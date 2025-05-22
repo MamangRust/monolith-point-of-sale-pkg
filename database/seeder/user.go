@@ -3,9 +3,10 @@ package seeder
 import (
 	"context"
 	"fmt"
-	db "pointofsale/pkg/database/schema"
-	"pointofsale/pkg/hash"
-	"pointofsale/pkg/logger"
+
+	db "github.com/MamangRust/monolith-point-of-sale-pkg/database/schema"
+	"github.com/MamangRust/monolith-point-of-sale-pkg/hash"
+	"github.com/MamangRust/monolith-point-of-sale-pkg/logger"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"

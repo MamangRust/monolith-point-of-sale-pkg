@@ -70,6 +70,7 @@ type Querier interface {
 	//   - Requires all mandatory merchant fields
 	//   - Status defaults to 'active' unless specified otherwise
 	CreateMerchant(ctx context.Context, arg CreateMerchantParams) (*Merchant, error)
+	CreateMerchantDocument(ctx context.Context, arg CreateMerchantDocumentParams) (*MerchantDocument, error)
 	// CreateOrder: Creates a new order record
 	// Purpose: Register a new transaction in the system
 	// Parameters:
@@ -126,6 +127,7 @@ type Querier interface {
 	//   - Used in JWT refresh token rotation
 	//   - Typically created during login/auth flows
 	CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) (*RefreshToken, error)
+	CreateResetToken(ctx context.Context, arg CreateResetTokenParams) (*ResetToken, error)
 	// CreateRole: Inserts a new role into the system
 	// Purpose: Add new role definitions (e.g., Admin, Cashier, etc.)
 	// Parameters:
@@ -177,6 +179,7 @@ type Querier interface {
 	// Business Logic:
 	//   - Only affects records marked as deleted
 	DeleteAllPermanentCategories(ctx context.Context) error
+	DeleteAllPermanentMerchantDocuments(ctx context.Context) error
 	// DeleteAllPermanentMerchants: Purges all trashed merchants
 	// Purpose: Clean up all soft-deleted merchant records
 	// Business Logic:
@@ -244,6 +247,7 @@ type Querier interface {
 	// Business Logic:
 	//   - Ensures category is deleted only if it has been soft-deleted
 	DeleteCategoryPermanently(ctx context.Context, categoryID int32) error
+	DeleteMerchantDocumentPermanently(ctx context.Context, documentID int32) error
 	// DeleteMerchantPermanently: Hard-deletes a merchant
 	// Purpose: Completely remove merchant from database
 	// Parameters:
@@ -305,6 +309,7 @@ type Querier interface {
 	//   - Used during password reset or account lock
 	//   - Ensures complete session invalidation
 	DeleteRefreshTokenByUserId(ctx context.Context, userID int32) error
+	DeleteResetToken(ctx context.Context, userID int64) error
 	// DeleteTransactionPermanently: Hard-deletes a transaction
 	// Purpose: Completely remove transaction from database
 	// Parameters:
@@ -346,6 +351,7 @@ type Querier interface {
 	//   - Used for token management and validation
 	//   - Limits to 1 result to get latest token
 	FindRefreshTokenByUserId(ctx context.Context, userID int32) (*RefreshToken, error)
+	GetActiveMerchantDocuments(ctx context.Context, arg GetActiveMerchantDocumentsParams) ([]*GetActiveMerchantDocumentsRow, error)
 	// GetActiveRoles: Retrieves only active (non-deleted) roles with optional search and pagination
 	// Purpose: Display roles that are currently usable in the system
 	// Parameters:
@@ -494,6 +500,8 @@ type Querier interface {
 	//   - Returns single record or nothing
 	//   - Used for merchant profile viewing and editing
 	GetMerchantByID(ctx context.Context, merchantID int32) (*Merchant, error)
+	GetMerchantDocument(ctx context.Context, documentID int32) (*MerchantDocument, error)
+	GetMerchantDocuments(ctx context.Context, arg GetMerchantDocumentsParams) ([]*GetMerchantDocumentsRow, error)
 	// GetMerchants: Retrieves paginated list of active merchants with search capability
 	// Purpose: List all active merchants for management UI
 	// Parameters:
@@ -1180,6 +1188,7 @@ type Querier interface {
 	//   - Returns by newest first (created_at DESC)
 	//   - Used for "Trash Bin" UI or soft-delete management
 	GetProductsTrashed(ctx context.Context, arg GetProductsTrashedParams) ([]*GetProductsTrashedRow, error)
+	GetResetToken(ctx context.Context, token string) (*ResetToken, error)
 	// GetRole: Retrieves role details by role_id
 	// Purpose: Fetch a single role record (regardless of deleted status)
 	// Parameters:
@@ -1285,6 +1294,7 @@ type Querier interface {
 	//   - Used in transaction recovery/audit interfaces
 	//   - Includes total_count for pagination in trash management UI
 	GetTransactionsTrashed(ctx context.Context, arg GetTransactionsTrashedParams) ([]*GetTransactionsTrashedRow, error)
+	GetTrashedMerchantDocuments(ctx context.Context, arg GetTrashedMerchantDocumentsParams) ([]*GetTrashedMerchantDocumentsRow, error)
 	// GetTrashedRoles: Retrieves only soft-deleted roles with optional search and pagination
 	// Purpose: For trash/recycle bin management
 	// Parameters:
@@ -1772,6 +1782,7 @@ type Querier interface {
 	// Business Logic:
 	//   - Resets deleted_at for all soft-deleted records
 	RestoreAllCategories(ctx context.Context) error
+	RestoreAllMerchantDocuments(ctx context.Context) error
 	// RestoreAllMerchants: Mass restoration of deleted merchants
 	// Purpose: Recover all trashed merchants at once
 	// Business Logic:
@@ -1849,6 +1860,7 @@ type Querier interface {
 	//   - Preserves all original merchant data
 	//   - Reactivates associated services
 	RestoreMerchant(ctx context.Context, merchantID int32) (*Merchant, error)
+	RestoreMerchantDocument(ctx context.Context, documentID int32) (*MerchantDocument, error)
 	// RestoreOrder: Recovers a soft-deleted order
 	// Purpose: Reactivate a cancelled order
 	// Parameters:
@@ -1941,6 +1953,7 @@ type Querier interface {
 	//   - Allows recovery via restore function
 	//   - Maintains referential integrity
 	TrashMerchant(ctx context.Context, merchantID int32) (*Merchant, error)
+	TrashMerchantDocument(ctx context.Context, documentID int32) (*MerchantDocument, error)
 	// TrashOrderItem: Soft-deletes a specific order item
 	// Purpose: Marks an item as deleted without removing it from DB
 	// Parameters:
@@ -2046,6 +2059,9 @@ type Querier interface {
 	//   - Validates all required fields
 	//   - Returns modified record for confirmation
 	UpdateMerchant(ctx context.Context, arg UpdateMerchantParams) (*Merchant, error)
+	UpdateMerchantDocument(ctx context.Context, arg UpdateMerchantDocumentParams) (*MerchantDocument, error)
+	UpdateMerchantDocumentStatus(ctx context.Context, arg UpdateMerchantDocumentStatusParams) (*MerchantDocument, error)
+	UpdateMerchantStatus(ctx context.Context, arg UpdateMerchantStatusParams) (*Merchant, error)
 	// UpdateOrder: Modifies order information
 	// Purpose: Update order details (primarily total price)
 	// Parameters:
@@ -2152,6 +2168,8 @@ type Querier interface {
 	//   - Validates email uniqueness
 	//   - Password field optional (can maintain existing)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (*User, error)
+	UpdateUserIsVerified(ctx context.Context, arg UpdateUserIsVerifiedParams) (*User, error)
+	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (*User, error)
 }
 
 var _ Querier = (*Queries)(nil)

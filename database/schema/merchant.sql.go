@@ -572,3 +572,36 @@ func (q *Queries) UpdateMerchant(ctx context.Context, arg UpdateMerchantParams) 
 	)
 	return &i, err
 }
+
+const updateMerchantStatus = `-- name: UpdateMerchantStatus :one
+UPDATE merchants
+SET status = $2,
+    updated_at = CURRENT_TIMESTAMP
+WHERE merchant_id = $1
+  AND deleted_at IS NULL
+  RETURNING merchant_id, user_id, name, description, address, contact_email, contact_phone, status, created_at, updated_at, deleted_at
+`
+
+type UpdateMerchantStatusParams struct {
+	MerchantID int32  `json:"merchant_id"`
+	Status     string `json:"status"`
+}
+
+func (q *Queries) UpdateMerchantStatus(ctx context.Context, arg UpdateMerchantStatusParams) (*Merchant, error) {
+	row := q.db.QueryRowContext(ctx, updateMerchantStatus, arg.MerchantID, arg.Status)
+	var i Merchant
+	err := row.Scan(
+		&i.MerchantID,
+		&i.UserID,
+		&i.Name,
+		&i.Description,
+		&i.Address,
+		&i.ContactEmail,
+		&i.ContactPhone,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return &i, err
+}

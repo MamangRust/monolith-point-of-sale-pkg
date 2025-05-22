@@ -43,6 +43,19 @@ type Merchant struct {
 	DeletedAt    sql.NullTime   `json:"deleted_at"`
 }
 
+type MerchantDocument struct {
+	DocumentID   int32          `json:"document_id"`
+	MerchantID   int32          `json:"merchant_id"`
+	DocumentType string         `json:"document_type"`
+	DocumentUrl  string         `json:"document_url"`
+	Status       string         `json:"status"`
+	Note         sql.NullString `json:"note"`
+	UploadedAt   sql.NullTime   `json:"uploaded_at"`
+	CreatedAt    sql.NullTime   `json:"created_at"`
+	UpdatedAt    sql.NullTime   `json:"updated_at"`
+	DeletedAt    sql.NullTime   `json:"deleted_at"`
+}
+
 type Order struct {
 	OrderID    int32        `json:"order_id"`
 	MerchantID int32        `json:"merchant_id"`
@@ -92,6 +105,13 @@ type RefreshToken struct {
 	DeletedAt      sql.NullTime `json:"deleted_at"`
 }
 
+type ResetToken struct {
+	ID         int32     `json:"id"`
+	UserID     int64     `json:"user_id"`
+	Token      string    `json:"token"`
+	ExpiryDate time.Time `json:"expiry_date"`
+}
+
 type Role struct {
 	RoleID    int32        `json:"role_id"`
 	RoleName  string       `json:"role_name"`
@@ -114,14 +134,16 @@ type Transaction struct {
 }
 
 type User struct {
-	UserID    int32        `json:"user_id"`
-	Firstname string       `json:"firstname"`
-	Lastname  string       `json:"lastname"`
-	Email     string       `json:"email"`
-	Password  string       `json:"password"`
-	CreatedAt sql.NullTime `json:"created_at"`
-	UpdatedAt sql.NullTime `json:"updated_at"`
-	DeletedAt sql.NullTime `json:"deleted_at"`
+	UserID           int32        `json:"user_id"`
+	Firstname        string       `json:"firstname"`
+	Lastname         string       `json:"lastname"`
+	Email            string       `json:"email"`
+	Password         string       `json:"password"`
+	VerificationCode string       `json:"verification_code"`
+	IsVerified       sql.NullBool `json:"is_verified"`
+	CreatedAt        sql.NullTime `json:"created_at"`
+	UpdatedAt        sql.NullTime `json:"updated_at"`
+	DeletedAt        sql.NullTime `json:"deleted_at"`
 }
 
 type UserRole struct {

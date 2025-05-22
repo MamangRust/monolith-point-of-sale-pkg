@@ -3,8 +3,9 @@ package database
 import (
 	"database/sql"
 	"fmt"
-	"pointofsale/pkg/logger"
 	"time"
+
+	"github.com/MamangRust/monolith-point-of-sale-pkg/logger"
 
 	_ "github.com/lib/pq"
 	"github.com/spf13/viper"

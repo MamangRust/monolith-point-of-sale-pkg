@@ -3,10 +3,11 @@ package seeder
 import (
 	"context"
 	"fmt"
-	db "pointofsale/pkg/database/schema"
-	"pointofsale/pkg/hash"
-	"pointofsale/pkg/logger"
 	"time"
+
+	db "github.com/MamangRust/monolith-point-of-sale-pkg/database/schema"
+	"github.com/MamangRust/monolith-point-of-sale-pkg/hash"
+	"github.com/MamangRust/monolith-point-of-sale-pkg/logger"
 )
 
 type Deps struct {
