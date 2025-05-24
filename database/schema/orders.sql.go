@@ -9,8 +9,6 @@ import (
 	"context"
 	"database/sql"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 const createOrder = `-- name: CreateOrder :one
@@ -807,16 +805,16 @@ FROM orders
 WHERE 
     deleted_at IS NULL
     AND ($1::TEXT IS NULL OR order_id::TEXT ILIKE '%' || $1 || '%' OR total_price::TEXT ILIKE '%' || $1 || '%')
-    AND ($4::UUID IS NULL OR merchant_id = $4)
+    AND ($4::INT IS NULL OR merchant_id = $4)
 ORDER BY created_at DESC
 LIMIT $2 OFFSET $3
 `
 
 type GetOrdersByMerchantParams struct {
-	Column1 string    `json:"column_1"`
-	Limit   int32     `json:"limit"`
-	Offset  int32     `json:"offset"`
-	Column4 uuid.UUID `json:"column_4"`
+	Column1 string `json:"column_1"`
+	Limit   int32  `json:"limit"`
+	Offset  int32  `json:"offset"`
+	Column4 int32  `json:"column_4"`
 }
 
 type GetOrdersByMerchantRow struct {

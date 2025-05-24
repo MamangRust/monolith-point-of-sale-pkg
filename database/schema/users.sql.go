@@ -17,6 +17,8 @@ INSERT INTO
         lastname,
         email,
         password,
+        verification_code,
+        is_verified,
         created_at,
         updated_at
     )
@@ -25,16 +27,20 @@ VALUES (
         $2,
         $3,
         $4,
+        $5,
+        $6,
         current_timestamp,
         current_timestamp
     ) RETURNING user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at
 `
 
 type CreateUserParams struct {
-	Firstname string `json:"firstname"`
-	Lastname  string `json:"lastname"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
+	Firstname        string       `json:"firstname"`
+	Lastname         string       `json:"lastname"`
+	Email            string       `json:"email"`
+	Password         string       `json:"password"`
+	VerificationCode string       `json:"verification_code"`
+	IsVerified       sql.NullBool `json:"is_verified"`
 }
 
 // CreateUser: Creates a new user account
@@ -58,6 +64,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (*User, 
 		arg.Lastname,
 		arg.Email,
 		arg.Password,
+		arg.VerificationCode,
+		arg.IsVerified,
 	)
 	var i User
 	err := row.Scan(

@@ -849,6 +849,21 @@ WHERE category_id = $1
   AND deleted_at IS NULL;
 
 
+-- GetCategoryByIDTrashed: Fetches a single category by its ID
+-- Purpose: Retrieve details of an active (non-deleted) category
+-- Parameters:
+--   $1: Category ID to search for
+-- Returns:
+--   Full category record if found and not deleted
+-- Business Logic:
+--   - Excludes soft-deleted categories
+-- name: GetCategoryByIDTrashed :one
+SELECT *
+FROM categories
+WHERE category_id = $1
+  AND deleted_at IS NOT NULL;
+
+
 
 -- GetCategoryByName: Fetches a single category by its name
 -- Purpose: Retrieve details of an active (non-deleted) category

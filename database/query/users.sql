@@ -114,6 +114,8 @@ INSERT INTO
         lastname,
         email,
         password,
+        verification_code,
+        is_verified,
         created_at,
         updated_at
     )
@@ -122,9 +124,12 @@ VALUES (
         $2,
         $3,
         $4,
+        $5,
+        $6,
         current_timestamp,
         current_timestamp
     ) RETURNING *;
+
 
 -- UpdateUser: Modifies user account information
 -- Purpose: Update user profile details

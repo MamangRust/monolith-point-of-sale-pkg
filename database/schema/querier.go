@@ -472,6 +472,15 @@ type Querier interface {
 	// Business Logic:
 	//   - Excludes soft-deleted categories
 	GetCategoryByID(ctx context.Context, categoryID int32) (*Category, error)
+	// GetCategoryByIDTrashed: Fetches a single category by its ID
+	// Purpose: Retrieve details of an active (non-deleted) category
+	// Parameters:
+	//   $1: Category ID to search for
+	// Returns:
+	//   Full category record if found and not deleted
+	// Business Logic:
+	//   - Excludes soft-deleted categories
+	GetCategoryByIDTrashed(ctx context.Context, categoryID int32) (*Category, error)
 	// GetCategoryByName: Fetches a single category by its name
 	// Purpose: Retrieve details of an active (non-deleted) category
 	// Parameters:

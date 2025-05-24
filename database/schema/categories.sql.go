@@ -356,6 +356,40 @@ func (q *Queries) GetCategoryByID(ctx context.Context, categoryID int32) (*Categ
 	return &i, err
 }
 
+const getCategoryByIDTrashed = `-- name: GetCategoryByIDTrashed :one
+SELECT category_id, name, description, slug_category, created_at, updated_at, deleted_at
+FROM categories
+WHERE category_id = $1
+  AND deleted_at IS NOT NULL
+`
+
+// GetCategoryByIDTrashed: Fetches a single category by its ID
+// Purpose: Retrieve details of an active (non-deleted) category
+// Parameters:
+//
+//	$1: Category ID to search for
+//
+// Returns:
+//
+//	Full category record if found and not deleted
+//
+// Business Logic:
+//   - Excludes soft-deleted categories
+func (q *Queries) GetCategoryByIDTrashed(ctx context.Context, categoryID int32) (*Category, error) {
+	row := q.db.QueryRowContext(ctx, getCategoryByIDTrashed, categoryID)
+	var i Category
+	err := row.Scan(
+		&i.CategoryID,
+		&i.Name,
+		&i.Description,
+		&i.SlugCategory,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return &i, err
+}
+
 const getCategoryByName = `-- name: GetCategoryByName :one
 SELECT category_id, name, description, slug_category, created_at, updated_at, deleted_at
 FROM categories
