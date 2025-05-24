@@ -40,6 +40,12 @@ message UpdateMerchantRequest {
     string status = 8;
 }
 
+message UpdateMerchantStatusRequest{
+    int32 merchant_id = 1;
+    string status = 2;
+}
+
+
 message MerchantResponse {
     int32 id = 1;
     int32 user_id = 2;
@@ -120,8 +126,9 @@ service MerchantService {
 
     rpc Create(CreateMerchantRequest) returns (ApiResponseMerchant);
     rpc Update(UpdateMerchantRequest) returns (ApiResponseMerchant);
+    rpc UpdateMerchantStatus(UpdateMerchantStatusRequest) returns(ApiResponseMerchant){}
     rpc TrashedMerchant(FindByIdMerchantRequest) returns (ApiResponseMerchantDeleteAt);
-    rpc RestoreMerchant(FindByIdMerchantRequest) returns (ApiResponseMerchantDeleteAt);
+    rpc RestoreMerchant(FindByIdMerchantRequest) returns (ApiResponseMerchant);
     rpc DeleteMerchantPermanent(FindByIdMerchantRequest) returns (ApiResponseMerchantDelete);
 
     rpc RestoreAllMerchant(google.protobuf.Empty) returns (ApiResponseMerchantAll){}
