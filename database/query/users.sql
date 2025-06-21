@@ -94,6 +94,23 @@ SELECT * FROM users WHERE user_id = $1 AND deleted_at IS NULL;
 SELECT * FROM users WHERE email = $1 AND deleted_at IS NULL;
 
 
+-- name: GetUserByEmailAndVerified :one
+-- Purpose: Retrieve a verified user by their email.
+-- Parameters:
+--   $1: email - The email of the user to fetch.
+-- Returns:
+--   - User record where email matches, user is verified, and not deleted.
+-- Business Logic:
+--   - Must match email exactly.
+--   - `is_verified` must be true.
+--   - `deleted_at` must be NULL (not soft-deleted).
+SELECT *
+FROM users
+WHERE email = $1
+  AND is_verified = true
+  AND deleted_at IS NULL;
+
+
 -- CreateUser: Creates a new user account
 -- Purpose: Register a new user in the system
 -- Parameters:
