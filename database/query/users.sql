@@ -80,6 +80,18 @@ LIMIT $2 OFFSET $3;
 -- name: GetUserByID :one
 SELECT * FROM users WHERE user_id = $1 AND deleted_at IS NULL;
 
+
+-- name: GetUserByVerificationCode :one
+-- Purpose: Fetch a user based on their verification code.
+-- Parameters:
+--   $1: verification_code - The verification code of the user to fetch.
+-- Returns:
+--   - User record matching the provided verification code.
+-- Business Logic:
+--   - Filters the users table to find a user based on their verification code.
+-- name: GetUserByVerificationCode :one
+SELECT * FROM users WHERE verification_code = $1;
+
 -- GetUserByEmail: Retrieves active user by email
 -- Purpose: Lookup user by email address (for authentication)
 -- Parameters:

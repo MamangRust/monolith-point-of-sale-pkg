@@ -1354,6 +1354,14 @@ type Querier interface {
 	//   - Used for user profile viewing/editing
 	//   - Primary lookup for user management
 	GetUserByID(ctx context.Context, userID int32) (*User, error)
+	// Purpose: Fetch a user based on their verification code.
+	// Parameters:
+	//   $1: verification_code - The verification code of the user to fetch.
+	// Returns:
+	//   - User record matching the provided verification code.
+	// Business Logic:
+	//   - Filters the users table to find a user based on their verification code.
+	GetUserByVerificationCode(ctx context.Context, verificationCode string) (*User, error)
 	// GetUserRoles: Retrieves all roles assigned to a specific user
 	// Purpose: Identify the access level(s) of a user
 	// Parameters:

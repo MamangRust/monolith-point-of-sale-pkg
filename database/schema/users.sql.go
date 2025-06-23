@@ -226,6 +226,38 @@ func (q *Queries) GetUserByID(ctx context.Context, userID int32) (*User, error) 
 	return &i, err
 }
 
+const getUserByVerificationCode = `-- name: GetUserByVerificationCode :one
+SELECT user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at FROM users WHERE verification_code = $1
+`
+
+// Purpose: Fetch a user based on their verification code.
+// Parameters:
+//
+//	$1: verification_code - The verification code of the user to fetch.
+//
+// Returns:
+//   - User record matching the provided verification code.
+//
+// Business Logic:
+//   - Filters the users table to find a user based on their verification code.
+func (q *Queries) GetUserByVerificationCode(ctx context.Context, verificationCode string) (*User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByVerificationCode, verificationCode)
+	var i User
+	err := row.Scan(
+		&i.UserID,
+		&i.Firstname,
+		&i.Lastname,
+		&i.Email,
+		&i.Password,
+		&i.VerificationCode,
+		&i.IsVerified,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return &i, err
+}
+
 const getUserTrashed = `-- name: GetUserTrashed :many
 SELECT
     user_id, firstname, lastname, email, password, verification_code, is_verified, created_at, updated_at, deleted_at,
