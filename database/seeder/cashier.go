@@ -68,6 +68,6 @@ func (r *cashierSeeder) Seed() error {
 
 	}
 
-	r.logger.Info("Cashier seeding completed successfully.")
+	r.logger.Info("Cashier seeding completed successfully.", zap.Int("count", 10))
 	return nil
 }

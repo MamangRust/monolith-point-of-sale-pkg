@@ -89,12 +89,12 @@ func (r *productSeeder) Seed() error {
 		})
 
 		if err != nil {
-			r.logger.Error("Failed to create product:", zap.Any("error", err))
+			r.logger.Error("Failed to create product:", zap.Error(err))
 			return err
 		}
 
 	}
 
-	r.logger.Info("Product seeding completed successfully.")
+	r.logger.Info("Product seeding completed successfully.", zap.Int("count", 10))
 	return nil
 }

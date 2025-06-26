@@ -61,6 +61,6 @@ func (r *userSeeder) Seed() error {
 		}
 	}
 
-	r.logger.Info("User seeding completed successfully")
+	r.logger.Info("User seeding completed successfully", zap.Int("totalUsers", 10))
 	return nil
 }

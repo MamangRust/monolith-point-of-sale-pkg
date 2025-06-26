@@ -67,6 +67,6 @@ func (r *userRoleSeeder) Seed() error {
 		}
 	}
 
-	r.logger.Info("user roles assigned successfully")
+	r.logger.Info("user roles assigned successfully", zap.Int("users", len(users)), zap.Int("roles", len(roles)))
 	return nil
 }

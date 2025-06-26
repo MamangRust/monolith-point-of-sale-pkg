@@ -105,6 +105,6 @@ func (r *orderSeeder) Seed() error {
 		}
 	}
 
-	r.logger.Info("Order seeding completed successfully.")
+	r.logger.Info("Order seeding completed successfully.", zap.Int("count", 10))
 	return nil
 }

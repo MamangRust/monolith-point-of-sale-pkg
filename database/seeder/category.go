@@ -49,12 +49,12 @@ func (r *categorySeeder) Seed() error {
 			SlugCategory: slugCategory,
 		})
 		if err != nil {
-			r.logger.Error("Failed to create category:", zap.Any("error", err))
+			r.logger.Error("Failed to create category:", zap.Error(err))
 			return err
 		}
 		r.logger.Debug("Category created:", zap.String("slug", slugCategory.String))
 	}
 
-	r.logger.Info("Category seeding completed successfully.")
+	r.logger.Info("Category seeding completed successfully.", zap.Int("count", 10))
 	return nil
 }

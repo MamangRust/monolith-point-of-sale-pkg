@@ -25,7 +25,16 @@ func NewRoleSeeder(db *db.Queries, ctx context.Context, logger logger.LoggerInte
 }
 
 func (r *roleSeeder) Seed() error {
-	randomRoles := []string{"Cashier", "Manager", "Admin", "Supplier"}
+	randomRoles := []string{
+		"Super Admin",
+		"Admin",
+		"Store Manager",
+		"Cashier",
+		"Inventory Staff",
+		"Support",
+		"Auditor",
+		"Viewer",
+	}
 
 	totalRoles := len(randomRoles)
 
@@ -37,6 +46,6 @@ func (r *roleSeeder) Seed() error {
 		}
 	}
 
-	r.logger.Debug("role seeded successfully", zap.Int("totalRoles", totalRoles))
+	r.logger.Info("role seeded successfully", zap.Int("totalRoles", totalRoles))
 	return nil
 }

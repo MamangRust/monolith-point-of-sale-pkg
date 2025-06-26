@@ -51,11 +51,11 @@ func (r *merchantSeeder) Seed() error {
 
 		_, err = r.db.CreateMerchant(r.ctx, merchant)
 		if err != nil {
-			r.logger.Error("Failed to create merchant:", zap.Any("error", err))
+			r.logger.Error("Failed to create merchant:", zap.Error(err))
 			return err
 		}
 	}
 
-	r.logger.Info("Merchant seeding completed successfully.")
+	r.logger.Info("Merchant seeding completed successfully.", zap.Int("count", 10))
 	return nil
 }

@@ -78,6 +78,6 @@ func (r *transactionSeeder) Seed() error {
 		}
 	}
 
-	r.logger.Info("Successfully seeded 10 transactions.")
+	r.logger.Info("Successfully seeded 10 transactions.", zap.Int("count", 10))
 	return nil
 }
